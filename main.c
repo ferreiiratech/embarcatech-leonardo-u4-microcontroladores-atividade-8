@@ -19,8 +19,8 @@ int main()
     init_joystick_settings();
  
     // Inicialização das configurações do led vermelho e azul recebendo o slice do PWM
-    slice_led_red = init_pin_pwm_config(LED_PIN_BLUE, PWM_DIVISER, WRAP_PERIOD);
-    slice_led_blue = init_pin_pwm_config(LED_PIN_RED, PWM_DIVISER, WRAP_PERIOD);
+    slice_led_red = init_pin_pwm_config(LED_PIN_BLUE, PWM_DIVISER, WRAP_PERIOD, status_led_red);
+    slice_led_blue = init_pin_pwm_config(LED_PIN_RED, PWM_DIVISER, WRAP_PERIOD, status_led_blue);
 
     // Inicialização das configurações do botão A e do joystick
     init_button_settings(BUTTON_PIN_A, GPIO_IN, true);
