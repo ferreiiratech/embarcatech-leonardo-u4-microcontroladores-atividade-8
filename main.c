@@ -14,6 +14,9 @@ int main()
 
     // Inicialização da configuração do led verde
     init_pin_gpio_config(LED_PIN_GREEN);
+
+    // Inicializa a configuração do joystick
+    init_joystick_settings();
  
     // Inicialização das configurações do led vermelho e azul recebendo o slice do PWM
     slice_led_red = init_pin_pwm_config(LED_PIN_BLUE, PWM_DIVISER, WRAP_PERIOD);
@@ -28,7 +31,15 @@ int main()
     gpio_set_irq_enabled_with_callback(JOYSTICK_PIN_BUTTON, GPIO_IRQ_EDGE_FALL, true, &button_a_isr);
 
     while (true) {
-        printf("Hello, world!\n");
+        read_joystick_positions();
+
+        printf("Posição X %d", JOYSTICK_POSITION_X);
+        printf("Posição Y %d", JOYSTICK_POSITION_Y);
+        printf("\n");
+
+        draw_square(JOYSTICK_POSITION_Y / 100, JOYSTICK_POSITION_X / 100, 8, 8, true);
+
+        //printf("Hello, world!\n");
         sleep_ms(1000);
     }
 }

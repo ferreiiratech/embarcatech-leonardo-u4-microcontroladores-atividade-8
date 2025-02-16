@@ -7,6 +7,29 @@ volatile bool status_led_red = false;       // Variável para controlar o estado
 volatile bool status_led_blue = false;      // Variável para controlar o estado do LED azul
 uint slice_led_red;                         // o slice do LED vermelho
 uint slice_led_blue;                        // o slice do LED azul
+volatile uint16_t JOYSTICK_POSITION_X;  // Posição do joystick na direção X
+volatile uint16_t JOYSTICK_POSITION_Y;  // Posição do joystick na direção Y
+
+// Função que desenha um quadrado no display OLED
+void draw_square(uint8_t x, uint8_t y, uint8_t largura, uint8_t altura, bool value) {
+    ssd1306_fill(&ssd, false); // Limpa o display
+    ssd1306_rect(&ssd, x, y, largura, altura, true, value);
+    ssd1306_send_data(&ssd); // Atualiza o display
+}
+
+// Inicializa a configuração do joystick
+void init_joystick_settings() {
+    adc_init();
+    adc_gpio_init(JOYSTICK_PIN_X);
+    adc_gpio_init(JOYSTICK_PIN_Y);
+}
+
+void read_joystick_positions() {
+    adc_select_input(JOYSTICK_ADC_CHANNEL_X);
+    JOYSTICK_POSITION_X = adc_read();
+    adc_select_input(JOYSTICK_ADC_CHANNEL_Y);
+    JOYSTICK_POSITION_Y = adc_read();
+}
 
 // Inicializa configuração o pino do led
 void init_pin_gpio_config(uint pin) {
