@@ -33,6 +33,8 @@ extern uint slice_led_red;                      // Slice do PWM do LED vermelho
 extern uint slice_led_blue;                     // Slice do PWM do LED azul
 extern volatile uint16_t JOYSTICK_POSITION_X;   // Posição do joystick na direção X
 extern volatile uint16_t JOYSTICK_POSITION_Y;   // Posição do joystick na direção Y
+extern volatile uint8_t square_x;  // Posição inicial aproximada no centro
+extern volatile uint8_t square_y;
 
 void init_pin_gpio_config(uint pin);
 void init_button_settings(uint pin, bool out, bool is_pull_up);
@@ -40,7 +42,7 @@ void button_a_isr(uint gpio, uint32_t events);
 void init_display_settings();
 uint init_pin_pwm_config(uint pin, float divider, uint16_t wrap);
 void set_pwm_level(uint pin, uint16_t pulse_width);
-void draw_square(uint8_t x, uint8_t y, uint8_t largura, uint8_t altura, bool value);
+void draw_square(uint8_t x, uint8_t y);
 void init_joystick_settings();
 void read_joystick_positions();
 

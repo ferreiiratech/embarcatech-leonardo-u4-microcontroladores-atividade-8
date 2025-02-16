@@ -30,14 +30,9 @@ int main()
     gpio_set_irq_enabled_with_callback(BUTTON_PIN_A, GPIO_IRQ_EDGE_FALL, true, &button_a_isr);
     gpio_set_irq_enabled_with_callback(JOYSTICK_PIN_BUTTON, GPIO_IRQ_EDGE_FALL, true, &button_a_isr);
 
+    draw_square(square_x, square_y);
     while (true) {
         read_joystick_positions();
-
-        printf("Posição X %d", JOYSTICK_POSITION_X);
-        printf("Posição Y %d", JOYSTICK_POSITION_Y);
-        printf("\n");
-
-        draw_square(JOYSTICK_POSITION_Y / 100, JOYSTICK_POSITION_X / 100, 8, 8, true);
 
         //printf("Hello, world!\n");
         sleep_ms(1000);

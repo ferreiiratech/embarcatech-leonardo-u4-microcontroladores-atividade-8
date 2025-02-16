@@ -10,10 +10,20 @@ uint slice_led_blue;                        // o slice do LED azul
 volatile uint16_t JOYSTICK_POSITION_X;  // Posição do joystick na direção X
 volatile uint16_t JOYSTICK_POSITION_Y;  // Posição do joystick na direção Y
 
+volatile uint8_t square_x = 60;  // Posição inicial aproximada no centro
+volatile uint8_t square_y = 28;
+const uint8_t SQUARE_SIZE = 8;
+const uint8_t SCREEN_WIDTH = 128;
+const uint8_t SCREEN_HEIGHT = 64;
+const uint16_t JOYSTICK_MIN = 0;
+const uint16_t JOYSTICK_MAX = 4095;
+const uint16_t JOYSTICK_CENTER = 2048;
+const uint8_t MOVEMENT_THRESHOLD = 80; // Reduz sensibilidade
+
 // Função que desenha um quadrado no display OLED
-void draw_square(uint8_t x, uint8_t y, uint8_t largura, uint8_t altura, bool value) {
+void draw_square(uint8_t x, uint8_t y) {
     ssd1306_fill(&ssd, false); // Limpa o display
-    ssd1306_rect(&ssd, x, y, largura, altura, true, value);
+    ssd1306_rect(&ssd, x, y, SQUARE_SIZE, SQUARE_SIZE, true, true);
     ssd1306_send_data(&ssd); // Atualiza o display
 }
 
@@ -26,9 +36,24 @@ void init_joystick_settings() {
 
 void read_joystick_positions() {
     adc_select_input(JOYSTICK_ADC_CHANNEL_X);
-    JOYSTICK_POSITION_X = adc_read();
+    uint16_t new_x = adc_read();
     adc_select_input(JOYSTICK_ADC_CHANNEL_Y);
-    JOYSTICK_POSITION_Y = adc_read();
+    uint16_t new_y = adc_read();
+
+    // Apenas atualiza se houver uma mudança significativa
+    if (abs(new_x - JOYSTICK_POSITION_X) > MOVEMENT_THRESHOLD || 
+        abs(new_y - JOYSTICK_POSITION_Y) > MOVEMENT_THRESHOLD) {
+        
+        JOYSTICK_POSITION_X = new_x;
+        JOYSTICK_POSITION_Y = new_y;
+
+        // Mapeia os valores do joystick (0-4095) para a tela (0-120 largura, 0-56 altura)
+        square_x = (JOYSTICK_POSITION_X * (SCREEN_WIDTH - SQUARE_SIZE)) / JOYSTICK_MAX;
+        square_y = (SCREEN_HEIGHT - SQUARE_SIZE) - (JOYSTICK_POSITION_Y * (SCREEN_HEIGHT - SQUARE_SIZE)) / JOYSTICK_MAX;
+
+        // Desenha o quadrado na nova posição
+        draw_square(square_y, square_x);
+    }
 }
 
 // Inicializa configuração o pino do led
