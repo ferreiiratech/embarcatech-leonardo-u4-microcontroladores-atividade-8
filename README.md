@@ -14,7 +14,7 @@ Este projeto visa:
 
 ## Execução do programa
 
-[]()
+![image](assets/demo.gif)
 
 ## Requisitos
 
@@ -52,7 +52,7 @@ Para rodar este projeto, você precisará de:
 6. A placa executará automaticamente o firmware.
 
 ## Video de apresentação
-Link: []()
+Link: [Assistir apresentação](https://drive.google.com/file/d/1rSEVzvAlbI3lla-iwulUuqr9wKxSTJcl/view?usp=sharing)
 
 ## Autor
 Leonardo Ferreira Lima
