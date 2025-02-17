@@ -65,6 +65,7 @@ void update_display() {
     // Limpa o buffer antes de desenhar
     ssd1306_fill(&ssd, false);
 
+    // Desenha a borda
     draw_border();
 
     // Redesenha o quadrado na posição atual
@@ -92,6 +93,31 @@ uint16_t adapt_pwm_level(uint16_t pwm_level) {
     return pwm_level;
 }
 
+// Função que atualiza a posição do quadrado com base nas leituras do joystick
+void update_square_position(uint16_t joystick_x, uint16_t joystick_y) {
+    // Mapeia os valores do joystick (0-4095) para a tela (0-120 largura, 0-56 altura)
+    square_x = (joystick_x * (SCREEN_WIDTH - SQUARE_SIZE)) / JOYSTICK_MAX;
+    square_y = (SCREEN_HEIGHT - SQUARE_SIZE) - (joystick_y * (SCREEN_HEIGHT - SQUARE_SIZE)) / JOYSTICK_MAX;
+    update_display();
+}
+
+// Função que atualiza os LEDs PWM com base nas posições do joystick
+void update_led_pwm(uint16_t joystick_x, uint16_t joystick_y) {
+    // Calcula a intensidade do PWM baseado no eixo X (LED Vermelho)
+    uint16_t pwm_red = abs(joystick_x - JOYSTICK_CENTER) * 4096 / JOYSTICK_CENTER;
+    
+    // Calcula a intensidade do PWM baseado no eixo Y (LED Azul)
+    uint16_t pwm_blue = abs(joystick_y - JOYSTICK_CENTER) * 4096 / JOYSTICK_CENTER;
+
+    pwm_red = adapt_pwm_level(pwm_red);
+    pwm_blue = adapt_pwm_level(pwm_blue);
+
+    printf("X: %d, Y: %d\n", pwm_red, pwm_blue);
+    
+    set_pwm_level(LED_PIN_RED, pwm_red);
+    set_pwm_level(LED_PIN_BLUE, pwm_blue);
+}
+
 // Função que lê as posições do joystick e atualiza as posições x e y do quadrado
 void read_joystick_positions() {
     adc_select_input(JOYSTICK_ADC_CHANNEL_X);
@@ -99,37 +125,17 @@ void read_joystick_positions() {
     adc_select_input(JOYSTICK_ADC_CHANNEL_Y);
     uint16_t new_y = adc_read();
 
-    // Apenas atualiza se houver uma mudança realmente significativa, para ajudar a evitar oscilações e reduzir sensibilidade
+    // Apenas atualiza se houver uma mudança realmente significativa
     if (abs(new_x - JOYSTICK_POSITION_X) > MOVEMENT_THRESHOLD || 
         abs(new_y - JOYSTICK_POSITION_Y) > MOVEMENT_THRESHOLD) {
         
         JOYSTICK_POSITION_X = new_x;
         JOYSTICK_POSITION_Y = new_y;
-
-        // Mapeia os valores do joystick (0-4095) para a tela (0-120 largura, 0-56 altura)
-        square_x = (JOYSTICK_POSITION_X * (SCREEN_WIDTH - SQUARE_SIZE)) / JOYSTICK_MAX;
-        square_y = (SCREEN_HEIGHT - SQUARE_SIZE) - (JOYSTICK_POSITION_Y * (SCREEN_HEIGHT - SQUARE_SIZE)) / JOYSTICK_MAX;
-
-        // Desenha o quadrado na nova posição
-        update_display();
+        update_square_position(JOYSTICK_POSITION_X, JOYSTICK_POSITION_Y);
     }
 
-    // Calcula a intensidade do PWM baseado no eixo X (LED Vermelho)
-    uint16_t pwm_red = abs(JOYSTICK_POSITION_X - JOYSTICK_CENTER) * 4096 / JOYSTICK_CENTER;
-    
-    // Calcula a intensidade do PWM baseado no eixo Y (LED Azul)
-    uint16_t pwm_blue = abs(JOYSTICK_POSITION_Y - JOYSTICK_CENTER) * 4096 / JOYSTICK_CENTER;
-
-    pwm_red = adapt_pwm_level(pwm_red);
-    pwm_blue = adapt_pwm_level(pwm_blue);
-
-    printf("X: %d, Y: %d\n", pwm_red, pwm_blue);
-    
-    // Aplica os valores calculados no PWM dos LEDs
-    set_pwm_level(LED_PIN_RED, pwm_red);
-    set_pwm_level(LED_PIN_BLUE, pwm_blue);
+    update_led_pwm(JOYSTICK_POSITION_X, JOYSTICK_POSITION_Y);
 }
-
 // Inicializa configuração o pino do led
 void init_pin_gpio_config(uint pin) {
     gpio_init(pin);

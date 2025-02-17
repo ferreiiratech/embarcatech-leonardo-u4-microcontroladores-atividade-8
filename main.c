@@ -2,8 +2,6 @@
 #include "pico/stdlib.h"
 #include "src/system_config.h"
 
-volatile int pwm_level = 0;
-
 int main()
 {
     // Inicialização das configurações de I/O 
@@ -30,9 +28,12 @@ int main()
     gpio_set_irq_enabled_with_callback(BUTTON_PIN_A, GPIO_IRQ_EDGE_FALL, true, &button_a_isr);
     gpio_set_irq_enabled_with_callback(JOYSTICK_PIN_BUTTON, GPIO_IRQ_EDGE_FALL, true, &button_a_isr);
 
+    // Atualiza display
     update_display();
+
     while (true) {
 
+        // Ler a posição x e y do joystick
         read_joystick_positions();
 
         printf("Mova o joystick!\n");
