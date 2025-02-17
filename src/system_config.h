@@ -25,7 +25,6 @@
 #define JOYSTICK_ADC_CHANNEL_Y 0                 // Canal ADC do joystick na direção Y
 #define ZONE_OFF_LED (JOYSTICK_CENTER/8)
 
-
 extern volatile uint64_t last_interrupt_time;   // Tempo da última interrupção do botão A
 extern volatile bool status_led_green;          // Variável para controlar o estado do LED verde
 extern volatile bool status_led_red;            // Variável para controlar o estado do LED vermelho
@@ -43,8 +42,8 @@ void button_a_isr(uint gpio, uint32_t events);
 void init_display_settings();
 uint init_pin_pwm_config(uint pin, float divider, uint16_t wrap, bool status);
 void set_pwm_level(uint pin, uint16_t pulse_width);
-void draw_square(uint8_t x, uint8_t y);
 void init_joystick_settings();
 void read_joystick_positions();
+void update_display();
 
 #endif
